@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ObjFromFile : MonoBehaviour
 {
-    string objPath = @"C:\Users\hp\Downloads\aatish\obj\heavy\plantanueva\plantaa.obj";
+    string objPath = @"E:\project database\StudioOneEleven\Objects\cadnav-200315105421\cadnav.com_model\Models_G0202A086\o1.obj";
     string error = string.Empty;
     GameObject loadedObject;
 

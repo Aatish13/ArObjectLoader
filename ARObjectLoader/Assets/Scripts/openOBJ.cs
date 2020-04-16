@@ -11,7 +11,7 @@ public class openOBJ : MonoBehaviour
     // Use this for initialization  
     void Start()
     {
-        string path = "file:///storage/emulated/0/GameObjects/livingMTR.obj";   //.obj文件在安卓sd卡路径 >>>>>待修改为手动选择文件
+        string path = "file:///storage/emulated/0/GameObjects/o1.obj";   //.obj文件在安卓sd卡路径 >>>>>待修改为手动选择文件
         DirectoryInfo s = new DirectoryInfo(path);
         if(!s.Exists)
         {

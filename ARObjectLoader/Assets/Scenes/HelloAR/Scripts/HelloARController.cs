@@ -147,20 +147,22 @@ namespace GoogleARCore.Examples.HelloAR
 
                     var gameObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
 
-                    GameObject loadedObject =(GameObject) Instantiate(Resources.Load("LivingMTR"), hit.Pose.position, hit.Pose.rotation);
+                    // GameObject loadedObject = (GameObject) Instantiate(Resources.Load("LivingMTR"), hit.Pose.position, hit.Pose.rotation);
 
                     // Compensate for the hitPose rotation facing away from the raycast (i.e.
                     // camera).
                     gameObject.transform.Rotate(0, k_PrefabRotation, 0, Space.Self);
 
-                    loadedObject.transform.Rotate(0, k_PrefabRotation, 0, Space.Self);
+
+
+                    //loadedObject.transform.Rotate(0, k_PrefabRotation, 0, Space.Self);
                     // Create an anchor to allow ARCore to track the hitpoint as understanding of
                     // the physical world evolves.
                     var anchor = hit.Trackable.CreateAnchor(hit.Pose);
 
                     // Make game object a child of the anchor.
                     gameObject.transform.parent = anchor.transform;
-                    loadedObject.transform.parent = anchor.transform;
+                   // loadedObject.transform.parent = anchor.transform;
 
                 }
             }
