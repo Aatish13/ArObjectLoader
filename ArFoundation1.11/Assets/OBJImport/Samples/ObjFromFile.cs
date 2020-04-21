@@ -1,36 +1,61 @@
 ﻿using Dummiesman;
 using System.IO;
 using UnityEngine;
+using SimpleFileBrowser;
+using System.Collections;
+using UnityEngine.UI;
+using System;
 
 public class ObjFromFile : MonoBehaviour
 {
-    string objPath = @"file:\\storage\emulated\0\GameObjects\o1.obj";
+    string objPath = @"E:\project database\StudioOneEleven\Objects\obj\light\Livingroom\livingMTR.obj";
     string error = string.Empty;
     GameObject loadedObject;
-
-    void OnGUI() {
-        objPath = GUI.TextField(new Rect(0, 0, 256, 32), objPath);
-
-        GUI.Label(new Rect(0, 0, 256, 32), "Obj Path:");
-        if(GUI.Button(new Rect(256, 32, 64, 32), "Load File"))
+    public Text snakBar;
+    public Text ErrorBar;
+    public void OnBTNClick() {
+       
+        if (loadedObject != null)
+            Destroy(loadedObject);
+        snakBar.text = objPath;
+        loadedObject = new OBJLoader().Load(objPath);
+        error = string.Empty;
+       
+        if (!string.IsNullOrWhiteSpace(error))
         {
-            //file path
-            if (!File.Exists(objPath))
-            {
-                error = "File doesn't exist.";
-            }else{
-                if(loadedObject != null)            
-                    Destroy(loadedObject);
-                loadedObject = new OBJLoader().Load(objPath);
-                error = string.Empty;
-            }
+            ErrorBar.text = error;
         }
+    }
+    public void OnSelectBTNClick() {
+        FileBrowser.SetFilters(true, new FileBrowser.Filter("Object", ".obj"));
+        FileBrowser.SetDefaultFilter(".obj");
+        FileBrowser.SetExcludedExtensions(".lnk", ".tmp", ".zip", ".rar", ".exe");
+        // FileBrowser.ShowSaveDialog(null, null, false, "C:\\", "Save As", "Sav");
+        StartCoroutine(ShowLoadDialogCoroutine());
 
-        if(!string.IsNullOrWhiteSpace(error))
+    }
+    IEnumerator ShowLoadDialogCoroutine()
+    {
+        // Show a load file dialog and wait for a response from user
+        // Load file/folder: file, Initial path: default (Documents), Title: "Load File", submit button text: "Load"
+        yield return FileBrowser.WaitForLoadDialog(false, null, "Load File", "Load");
+
+        // Dialog is closed
+        // Print whether a file is chosen (FileBrowser.Success)
+        // and the path to the selected file (FileBrowser.Result) (null, if FileBrowser.Success is false)
+        Debug.Log(FileBrowser.Success + " " + FileBrowser.Result);
+
+        if (FileBrowser.Success)
         {
-            GUI.color = Color.red;
-            GUI.Box(new Rect(0, 64, 256 + 64, 32), error);
-            GUI.color = Color.white;
+            // If a file was chosen, read its bytes via FileBrowserHelpers
+            // Contrary to File.ReadAllBytes, this function works on Android 10+, as well
+            
+            objPath = FileBrowser.Result;
+            snakBar.text = objPath;
+           // byte[] bytes = FileBrowserHelpers.ReadBytesFromFile(FileBrowser.Result);
+           // string bitString = BitConverter.ToString(bytes);
+          //  ErrorBar.text = bitString;
+
         }
     }
 }

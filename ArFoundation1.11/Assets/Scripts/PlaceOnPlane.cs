@@ -77,7 +77,7 @@ public class PlaceOnPlane : MonoBehaviour
 
             if (spawnedObject == null)
             {
-                var loadOb = SnapLoader.SnapLoadOBJ(@"file:\\storage\emulated\o\GameObject\o1.obj", hitPose.position);
+                var loadOb = SnapLoader.SnapLoadOBJ(@"file:\\storage\emulated\0\GameObject\o1.obj", hitPose.position);
           
                 spawnedObject = Instantiate(m_PlacedPrefab, hitPose.position, hitPose.rotation);
             
