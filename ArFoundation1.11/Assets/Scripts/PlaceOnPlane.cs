@@ -33,10 +33,18 @@ public class PlaceOnPlane : MonoBehaviour
     /// <summary>
     /// The object instantiated as a result of a successful raycast intersection with a plane.
     /// </summary>
-    public GameObject spawnedObject { get; private set; }
+    public GameObject spawnedObject { get; set; }
+
+    public static GameObject AssatObj=null;
 
     public Text SnakBar;
     public string path;
+    string url = "https://github.com/Aatish13/3DObjects/blob/master/circle?raw=true";
+
+    public InputField Url;
+
+    public Slider YRotation;
+ 
     void Awake()
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
@@ -64,73 +72,95 @@ public class PlaceOnPlane : MonoBehaviour
         return false;
     }
 
+
+
     void Update()
     {
+      //  url = Url.textComponent.text;
         if (!TryGetTouchPosition(out Vector2 touchPosition))
             return;
-
-        if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
+    
+        if (spawnedObject != null) {
+            spawnedObject.transform.rotation = Quaternion.Euler(new Vector3(0,YRotation.value,0));
+        }
+        if (spawnedObject == null)
         {
-            // Raycast hits are sorted by distance, so the first one
-            // will be the closest hit.
-            var hitPose = s_Hits[0].pose;
+            if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
+            {
+                // Raycast hits are sorted by distance, so the first one
+                // will be the closest hit.
+                var hitPose = s_Hits[0].pose;
 
-            if (spawnedObject == null)
-            {
-                var loadOb = SnapLoader.SnapLoadOBJ(@"file:\\storage\emulated\0\GameObject\o1.obj", hitPose.position);
-          
-                spawnedObject = Instantiate(m_PlacedPrefab, hitPose.position, hitPose.rotation);
-            
+                if (spawnedObject == null)
+                {
+                      var loadOb = SnapLoader.SnapLoadOBJ(@"file:\\storage\emulated\0\GameObject\o1.obj", hitPose.position);
+                    if (AssatObj != null)
+                    {
+                        spawnedObject = Instantiate(AssatObj, hitPose.position, hitPose.rotation);
+
+                        VisualizePlanes(false);
+                        VisualizePoints(false);
+                    }
+                  // else {
+                    //  spawnedObject = Instantiate(m_PlacedPrefab, hitPose.position, hitPose.rotation);
+                    //}
+
+                }
+                else
+                {
+                    spawnedObject.transform.position = hitPose.position;
+                }
             }
-            else
-            {
-                spawnedObject.transform.position = hitPose.position;
-            }
+        }
+    }
+    public void LoadObj() {
+     
+            SnakBar.text = "Loading...............";
+        WWW www = new WWW(Url.text);
+        StartCoroutine(WaitForReq(www));
+    }
+
+    GameObject loadedGameObject;
+    IEnumerator WaitForReq(WWW www) {
+        yield return www;
+        AssetBundle bundle = www.assetBundle;
+        if (www.error == "")
+        {
+            var names = bundle.GetAllAssetNames();
+            loadedGameObject = (GameObject)bundle.LoadAsset(names[0]);
+             var obj = Instantiate(loadedGameObject);
+            SnakBar.text = "Loaded";
+
+        }
+        else {
+            Debug.Log(www.error);
+        }
+    }
+
+    public ARPlaneManager planeManager;
+    public ARPointCloudManager pointCloudManager;
+    void VisualizePlanes(bool active)
+    {
+        planeManager.enabled = active;
+        foreach (ARPlane plane in planeManager.trackables)
+        {
+            plane.gameObject.SetActive(active);
+        }
+    }
+
+    void VisualizePoints(bool active)
+    {
+        pointCloudManager.enabled = active;
+        foreach (ARPointCloud pointCLoud in pointCloudManager.trackables)
+        {
+            pointCLoud.gameObject.SetActive(active);
         }
     }
 
     void Start()
     {
 
-   
-        // Set filters (optional)
-        // It is sufficient to set the filters just once (instead of each time before showing the file browser dialog), 
-        // if all the dialogs will be using the same filters
-      //   FileBrowser.SetFilters(true, new FileBrowser.Filter("Object", ".obj"));
-
-        // Set default filter that is selected when the dialog is shown (optional)
-        // Returns true if the default filter is set successfully
-        // In this case, set Images filter as the default filter
-        // FileBrowser.SetDefaultFilter(".obj");
-
-        // Set excluded file extensions (optional) (by default, .lnk and .tmp extensions are excluded)
-        // Note that when you use this function, .lnk and .tmp extensions will no longer be
-        // excluded unless you explicitly add them as parameters to the function
-        //FileBrowser.SetExcludedExtensions(".lnk", ".tmp", ".zip", ".rar", ".exe");
-
-        // Add a new quick link to the browser (optional) (returns true if quick link is added successfully)
-        // It is sufficient to add a quick link just once
-        // Name: Users
-        // Path: C:\Users
-        // Icon: default (folder icon)
-      //  FileBrowser.AddQuickLink("Users", @"file:\\storage\emulated\o", null);
-
-        // Show a save file dialog 
-        // onSuccess event: not registered (which means this dialog is pretty useless)
-        // onCancel event: not registered
-        // Save file/folder: file, Initial path: "C:\", Title: "Save As", submit button text: "Save"
-        // FileBrowser.ShowSaveDialog( null, null, false, "C:\\", "Save As", "Save" );
-
-        // Show a select folder dialog 
-        // onSuccess event: print the selected folder's path
-        // onCancel event: print "Canceled"
-        // Load file/folder: folder, Initial path: default (Documents), Title: "Select Folder", submit button text: "Select"
-         //FileBrowser.ShowLoadDialog( (pat) => { Debug.Log( "Selected: " + pat ); }, 
-             //                          () => { Debug.Log( "Canceled" ); }, 
-           //                             true, null, "Select File", "Select" );
-
-        // Coroutine example
-          //StartCoroutine(ShowLoadDialogCoroutine());
+        Url.text = url;
 
     }
 

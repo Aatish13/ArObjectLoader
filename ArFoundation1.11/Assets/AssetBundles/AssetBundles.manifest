@@ -1,7 +1,10 @@
 ManifestFileVersion: 0
-CRC: 2543056571
+CRC: 3148786358
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: arplacedcube
+      Name: circle
+      Dependencies: {}
+    Info_1:
+      Name: anchor
       Dependencies: {}

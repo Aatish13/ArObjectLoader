@@ -1,17 +1,47 @@
 ﻿using Dummiesman;
+using System.Collections;
 using System.IO;
 using System.Text;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class ObjFromStream : MonoBehaviour {
-	void Start () {
-        //make www
-        var www = new WWW("https://raw.githubusercontent.com/Aatish13/ArObjectLoader/master/GameObjects/table.obj");
-        while (!www.isDone)
-            System.Threading.Thread.Sleep(1);
-        
-        //create stream and load
-        var textStream = new MemoryStream(Encoding.UTF8.GetBytes(www.text));
-        var loadedObj = new OBJLoader().Load(textStream);
-	}
+
+    public InputField Input;
+    public Text LoadingBar;
+    GameObject spawnedObject;
+    public void LoadObj() {
+        if (PlaceOnPlane.AssatObj != null) {
+            //PlaceOnPlane.AssatObj.active = false;
+            PlaceOnPlane.AssatObj = null;
+        }
+        LoadingBar.text = "Loading........";
+        WWW www2 = new WWW(Input.text);
+        StartCoroutine(WaitForReq(www2));
+    }
+    void Start () {
+        Input.text = "https://github.com/Aatish13/3DObjects/blob/master/circle?raw=true";
+        LoadingBar.text = "Loading........";
+        WWW www2 = new WWW(Input.text);
+        StartCoroutine(WaitForReq(www2));
+    }
+
+    IEnumerator WaitForReq(WWW www)
+    {
+        yield return www;
+        AssetBundle bundle = www.assetBundle;
+        if (www.error == null)
+        {
+            var names= bundle.GetAllAssetNames();
+          
+            GameObject cube = (GameObject)bundle.LoadAsset(names[0]);
+             // spawnedObject = Instantiate(cube);
+            PlaceOnPlane.AssatObj = cube;
+            LoadingBar.text = "";
+        }
+        else
+        {
+            Debug.Log(www.error);
+        }
+    }
+
 }
