@@ -59,7 +59,7 @@ public class PlaceOnPlane : MonoBehaviour
         VisualizePoints(false);
 
     }
-
+    
     public void MoveUp() {
         var pos = spawnedObject.transform.position;
         pos.y += 0.2f;
@@ -70,6 +70,38 @@ public class PlaceOnPlane : MonoBehaviour
         var pos = spawnedObject.transform.position;
         pos.y -= 0.2f;
         spawnedObject.transform.position = pos;
+    }
+    public Text sizeLable;
+    float[] size = { 1f,0.5f, 0.2f, 0.1f, 0.05f, 0.02f };
+    string[] lable = { "1:1", "1:2", "1:5", "1:10", "1:20", "1:50" };
+    int index = 0;
+    public void SizeUp()
+    {
+        if (spawnedObject != null)
+        {
+            if (index > 0)
+            {
+                index--;
+            }
+            Vector3 dif = new Vector3(size[index], size[index], size[index]);
+            spawnedObject.transform.localScale = dif;
+            sizeLable.text = lable[index];
+        }
+   }
+    public void SizeDown()
+    {
+        if (spawnedObject != null)
+        {
+            if (index < size.Length - 1)
+            {
+                index++;
+            }
+            Vector3 dif = new Vector3(size[index], size[index], size[index]);
+            spawnedObject.transform.localScale = dif;
+            sizeLable.text = lable[index];
+
+        }
+        
     }
     void Awake()
     {
