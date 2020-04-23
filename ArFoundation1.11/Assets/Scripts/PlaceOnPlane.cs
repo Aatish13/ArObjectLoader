@@ -39,12 +39,38 @@ public class PlaceOnPlane : MonoBehaviour
 
     public Text SnakBar;
     public string path;
-    string url = "https://github.com/Aatish13/3DObjects/blob/master/circle?raw=true";
+    string url = "https://github.com/Aatish13/3DObjects/blob/master/anchor?raw=true";
 
     public InputField Url;
 
     public Slider YRotation;
- 
+    bool MoveXZFlag = false;
+    public void MoveXZ()
+    {
+        MoveXZFlag = true;
+        VisualizePlanes(true);
+        VisualizePoints(true);
+
+    }
+    public void CloseMoveXZ()
+    {
+        MoveXZFlag = false;
+        VisualizePlanes(false);
+        VisualizePoints(false);
+
+    }
+
+    public void MoveUp() {
+        var pos = spawnedObject.transform.position;
+        pos.y += 0.2f;
+        spawnedObject.transform.position = pos;
+    }
+    public void MoveDown()
+    {
+        var pos = spawnedObject.transform.position;
+        pos.y -= 0.2f;
+        spawnedObject.transform.position = pos;
+    }
     void Awake()
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
@@ -83,8 +109,7 @@ public class PlaceOnPlane : MonoBehaviour
         if (spawnedObject != null) {
             spawnedObject.transform.rotation = Quaternion.Euler(new Vector3(0,YRotation.value,0));
         }
-        if (spawnedObject == null)
-        {
+       
             if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
             {
                 // Raycast hits are sorted by distance, so the first one
@@ -106,12 +131,12 @@ public class PlaceOnPlane : MonoBehaviour
                     //}
 
                 }
-                else
+                else if(MoveXZFlag)
                 {
                     spawnedObject.transform.position = hitPose.position;
                 }
             }
-        }
+      
     }
     public void LoadObj() {
      
@@ -185,28 +210,7 @@ public class PlaceOnPlane : MonoBehaviour
            
         }
     }
-    /* void Start()
-    {
-        string url = "your url";
-        StartCoroutine(loadWWWCaching(url));
-    }
-    IEnumerator loadWWWCaching(string url)
-    {
-        while (!Caching.ready)
-            yield return null;
-        using (WWW www = WWW.LoadFromCacheOrDownload(url, 1))
-        {
-            yield return www;
-            if (string.IsNullOrEmpty(www.error))
-            {
-                AssetBundle assetBundle = www.assetBundle;
-            }
-            else
-            {
-                Debug.Log("WWW error: " + www.error);
-            }
-        }
-    }*/
+
 
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
 

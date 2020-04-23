@@ -19,10 +19,9 @@ public class ObjFromStream : MonoBehaviour {
         StartCoroutine(WaitForReq(www2));
     }
     void Start () {
-        Input.text = "https://github.com/Aatish13/3DObjects/blob/master/circle?raw=true";
-        LoadingBar.text = "Loading........";
-        WWW www2 = new WWW(Input.text);
-        StartCoroutine(WaitForReq(www2));
+        Input.text = "https://github.com/Aatish13/3DObjects/blob/master/anchor?raw=true";
+        LoadingBar.text = "";
+       
     }
 
     IEnumerator WaitForReq(WWW www)
