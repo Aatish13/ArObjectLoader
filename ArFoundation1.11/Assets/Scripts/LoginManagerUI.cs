@@ -18,6 +18,7 @@ public class LoginManagerUI : MonoBehaviour
     public GameObject DashBoardPanel;
     public GameObject ProjectsPanal;
 
+    public GameObject LoadingPanal;
 
     public Text UserName;
     public Text ErrorText;
@@ -30,6 +31,8 @@ public class LoginManagerUI : MonoBehaviour
         LoginPanal.SetActive(false);
         DashBoardPanel.SetActive(false);
         ProjectsPanal.SetActive(false);
+
+        LoadingPanal.SetActive(false);
     }
 
     public void GotoLogin()
@@ -45,6 +48,7 @@ public class LoginManagerUI : MonoBehaviour
         //LoginPanal.SetActive(false);
         //LoginCanvas.SetActive(false);
         //ARCanvas.SetActive(true);
+        LoadingPanal.SetActive(true);
         StartCoroutine(Upload());
 
     }
@@ -89,7 +93,7 @@ public class LoginManagerUI : MonoBehaviour
                 UserName.text = json.GetObject("user").GetString("displayname");
                 Debug.Log(json.GetObject("user").GetString("displayname"));
                 LoginPanal.SetActive(false);
-          
+                LoadingPanal.SetActive(false);
                 ARCanvas.SetActive(false);
                 DashBoardPanel.SetActive(true);
             }
