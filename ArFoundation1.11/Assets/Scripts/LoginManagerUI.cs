@@ -5,6 +5,13 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Boomlagoon.JSON;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 public class LoginManagerUI : MonoBehaviour
 {
@@ -57,19 +64,19 @@ public class LoginManagerUI : MonoBehaviour
     IEnumerator Upload()
     {
 
-       // string jsonString = "{ \"email\":\"" + emailInput.text + "\",\"password\":\"" + passwordInput.text+"\"}";
-       // Debug.Log(jsonString);
-       
-       // byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonString);
+        // string jsonString = "{ \"email\":\"" + emailInput.text + "\",\"password\":\"" + passwordInput.text+"\"}";
+        // Debug.Log(jsonString);
+
+        // byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonString);
 
         WWWForm form = new WWWForm();
         form.AddField("email", emailInput.text);
         form.AddField("password", passwordInput.text);
         // request.uploadHandler = (UploadHandler)new UploadHandlerRaw(form);
 
-        var request =  UnityWebRequest.Post(url, form);
+        var request = UnityWebRequest.Post(url, form);
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-       // request.SetRequestHeader("Content-Type", "application/json");
+        // request.SetRequestHeader("Content-Type", "application/json");
         yield return request.SendWebRequest();
 
         if (request.error != null)
@@ -88,30 +95,111 @@ public class LoginManagerUI : MonoBehaviour
             Debug.Log("Form upload complete!");
             Debug.Log(json["status"].ToString());
             //Debug.Log(json["cookie"].ToString());
-            if (json["cookie"]!=null)
+            if (json["cookie"] != null)
             {
                 UserName.text = json.GetObject("user").GetString("displayname");
                 Debug.Log(json.GetObject("user").GetString("displayname"));
+                username = json.GetObject("user").GetString("username");
                 LoginPanal.SetActive(false);
                 LoadingPanal.SetActive(false);
                 ARCanvas.SetActive(false);
                 DashBoardPanel.SetActive(true);
+
             }
             else
             {
-                 ErrorText.text= json["error"].ToString();
+                ErrorText.text = json["error"].ToString();
                 Debug.Log(json["error"].ToString());
+                LoginPanal.SetActive(false);
             }
-          
+
         }
     }
+
+    class Project{
+        public double id { get; set; }
+        public string name { get; set; }
+        public string url { get; set; }
+}
+    public string username;
+    List<Project> Projects=new List<Project>();
+
+    public Text ProjectName;
+    int projectIndex=0;
+    IEnumerator fetchProjects() {
+        var request = UnityWebRequest.Get("https://studiooneeleven.co/wp-json/wp/v2/wpfm-files");
+        request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+         request.SetRequestHeader("Content-Type", "application/json");
+        yield return request.SendWebRequest();
+        if (request.error != null)
+        {
+            Debug.Log("Error: " + request.error);
+            ErrorText.text = "Error: " + request.error;
+        }
+        else
+        {
+            Debug.Log("All OK");
+            Debug.Log("Status Code: " + request.responseCode);
+            string responseText = request.downloadHandler.text;
+
+
+        
+            var obj = JSONArray.Parse(responseText);
+           
+            foreach (var o in obj) {
+                if (username.Equals(o.Obj.GetString("author_name")))
+                {
+
+                    Projects.Add(new Project { id = o.Obj.GetNumber("id"), name = o.Obj.GetString("wpfm_file_name"), url = o.Obj.GetString("wpfm_file_url") });
+                }
+            }
+            foreach(Project p in Projects)
+            {
+                Debug.Log(p.url);
+            }
+            ProjectName.text = Projects[0].name;
+            LoginPanal.SetActive(false);
+            // Print Headers
+            Debug.Log(responseText);
+           
+
+        }
+
+    }
+
+    public void NextProject() {
+        if (projectIndex + 1 < Projects.Count)
+        {
+            projectIndex++;
+            ProjectName.text = Projects[projectIndex].name;
+
+        }
+
+    }
+    public void PreviousProject()
+    {
+        if (projectIndex - 1 >=0)
+        {
+            projectIndex--;
+            ProjectName.text = Projects[projectIndex].name;
+
+        }
+
+    }
+
+
     public void GoToProjects() {
+
         DashBoardPanel.SetActive(false);
         ProjectsPanal.SetActive(true);
+        LoginPanal.SetActive(true);
+        StartCoroutine(fetchProjects());
     }
+    public InputField Input;
 
     public void GoToAr()
     {
+        Input.text = Projects[projectIndex].url.Replace("\\","");
         ARCanvas.SetActive(true);
         ProjectsPanal.SetActive(false);
     }
