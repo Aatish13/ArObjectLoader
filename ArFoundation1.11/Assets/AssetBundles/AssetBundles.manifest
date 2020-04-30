@@ -1,10 +1,10 @@
 ManifestFileVersion: 0
-CRC: 3148786358
+CRC: 66684482
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: circle
+      Name: anchor
       Dependencies: {}
     Info_1:
-      Name: anchor
+      Name: lighttest
       Dependencies: {}

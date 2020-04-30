@@ -32,14 +32,28 @@ public class LoginManagerUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ARCanvas.SetActive(false);
-        LoginCanvas.SetActive(true);
-        HomePanel.SetActive(true);
-        LoginPanal.SetActive(false);
-        DashBoardPanel.SetActive(false);
-        ProjectsPanal.SetActive(false);
-
-        LoadingPanal.SetActive(false);
+        if (PlayerPrefs.HasKey("username"))
+        {
+            ARCanvas.SetActive(false);
+            LoginCanvas.SetActive(true);
+            HomePanel.SetActive(false);
+            LoginPanal.SetActive(false);
+            DashBoardPanel.SetActive(true);
+            ProjectsPanal.SetActive(false);
+            LoadingPanal.SetActive(false);
+            UserName.text = PlayerPrefs.GetString("displayname");
+        }
+        else
+        {
+            ARCanvas.SetActive(false);
+            LoginCanvas.SetActive(true);
+            HomePanel.SetActive(true);
+            LoginPanal.SetActive(false);
+            DashBoardPanel.SetActive(false);
+            ProjectsPanal.SetActive(false);
+            LoadingPanal.SetActive(false);
+        }
+        
     }
 
     public void GotoLogin()
@@ -50,6 +64,7 @@ public class LoginManagerUI : MonoBehaviour
 
     public InputField emailInput;
     public InputField passwordInput;
+
     public void GotoDashBoard()
     {
         //LoginPanal.SetActive(false);
@@ -100,6 +115,9 @@ public class LoginManagerUI : MonoBehaviour
                 UserName.text = json.GetObject("user").GetString("displayname");
                 Debug.Log(json.GetObject("user").GetString("displayname"));
                 username = json.GetObject("user").GetString("username");
+                PlayerPrefs.SetString("username",username);
+                PlayerPrefs.SetString("displayname", json.GetObject("user").GetString("displayname"));
+
                 LoginPanal.SetActive(false);
                 LoadingPanal.SetActive(false);
                 ARCanvas.SetActive(false);
@@ -116,10 +134,12 @@ public class LoginManagerUI : MonoBehaviour
         }
     }
 
-    class Project{
+    class Project {
         public double id { get; set; }
         public string name { get; set; }
         public string url { get; set; }
+        public bool isloaded = false;
+        public GameObject LoadedObj { get; set; }
 }
     public string username;
     List<Project> Projects=new List<Project>();
@@ -135,6 +155,8 @@ public class LoginManagerUI : MonoBehaviour
         {
             Debug.Log("Error: " + request.error);
             ErrorText.text = "Error: " + request.error;
+
+            LoadingPanal.SetActive(false);
         }
         else
         {
@@ -145,9 +167,9 @@ public class LoginManagerUI : MonoBehaviour
 
         
             var obj = JSONArray.Parse(responseText);
-           
+            string username2 = PlayerPrefs.GetString("username");
             foreach (var o in obj) {
-                if (username.Equals(o.Obj.GetString("author_name")))
+                if (username2.Equals(o.Obj.GetString("author_name")))
                 {
 
                     Projects.Add(new Project { id = o.Obj.GetNumber("id"), name = o.Obj.GetString("wpfm_file_name"), url = o.Obj.GetString("wpfm_file_url") });
@@ -158,7 +180,10 @@ public class LoginManagerUI : MonoBehaviour
                 Debug.Log(p.url);
             }
             ProjectName.text = Projects[0].name;
-            LoginPanal.SetActive(false);
+
+            LoadingPanal.SetActive(false);
+            ProjectsPanal.SetActive(true);
+            DashBoardPanel.SetActive(false);
             // Print Headers
             Debug.Log(responseText);
            
@@ -189,20 +214,87 @@ public class LoginManagerUI : MonoBehaviour
 
 
     public void GoToProjects() {
+        if (Projects.Count == 0)
+        {
+            DashBoardPanel.SetActive(true);
+            ProjectsPanal.SetActive(false);
+            LoginPanal.SetActive(false);
+            LoadingPanal.SetActive(true);
+            StartCoroutine(fetchProjects());
+        }
+        else
+        {
+            DashBoardPanel.SetActive(false);
+            ProjectsPanal.SetActive(false);
+            LoginPanal.SetActive(false);
+            LoadingPanal.SetActive(false);
+            ProjectsPanal.SetActive(true);
 
-        DashBoardPanel.SetActive(false);
-        ProjectsPanal.SetActive(true);
-        LoginPanal.SetActive(true);
-        StartCoroutine(fetchProjects());
+        }
+
     }
     public InputField Input;
 
+    public void DownloadProject() {
+       
+    }
+
     public void GoToAr()
     {
-        Input.text = Projects[projectIndex].url.Replace("\\","");
+
+        Input.text = Projects[projectIndex].url.Replace("\\", "");
+      
+        if (Projects[projectIndex].isloaded == false)
+        {
+           
+            LoadObj();
+            Projects[projectIndex].isloaded = true;
+        }
+        else {
+            PlaceOnPlane.AssatObj = Projects[projectIndex].LoadedObj;
+           
+        }
+        
         ARCanvas.SetActive(true);
         ProjectsPanal.SetActive(false);
     }
+
+
+
+    public void LoadObj()
+    {
+        if (PlaceOnPlane.AssatObj != null)
+        {
+            //PlaceOnPlane.AssatObj.active = false;
+            PlaceOnPlane.AssatObj = null;
+        }
+        LoadingPanal.SetActive(true);
+        WWW www2 = new WWW(Projects[projectIndex].url.Replace("\\", ""));
+        StartCoroutine(WaitForReq(www2));
+    }
+    IEnumerator WaitForReq(WWW www)
+    {
+        yield return www;
+        AssetBundle bundle = www.assetBundle;
+        if (www.error == null)
+        {
+            var names = bundle.GetAllAssetNames();
+
+            GameObject cube = (GameObject)bundle.LoadAsset(names[0]);
+            // spawnedObject = Instantiate(cube);
+            Projects[projectIndex].LoadedObj = cube;
+            PlaceOnPlane.AssatObj = cube;
+
+            LoadingPanal.SetActive(false);
+        }
+        else
+        {
+            LoadingPanal.SetActive(false);
+            Debug.Log(www.error);
+        }
+    }
+
+
 
     public void BackToHome() {
         HomePanel.SetActive(true);

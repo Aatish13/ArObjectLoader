@@ -139,7 +139,7 @@ public class PlaceOnPlane : MonoBehaviour
             return;
     
         if (spawnedObject != null) {
-            spawnedObject.transform.rotation = Quaternion.Euler(new Vector3(0,YRotation.value,0));
+            spawnedObject.transform.rotation = Quaternion.Euler(new Vector3(0,YRotation.value+90,0));
         }
        
             if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
@@ -150,7 +150,7 @@ public class PlaceOnPlane : MonoBehaviour
 
                 if (spawnedObject == null)
                 {
-                      var loadOb = SnapLoader.SnapLoadOBJ(@"file:\\storage\emulated\0\GameObject\o1.obj", hitPose.position);
+                     //var loadOb = SnapLoader.SnapLoadOBJ(@"file:\\storage\emulated\0\GameObject\o1.obj", hitPose.position);
                     if (AssatObj != null)
                     {
                         spawnedObject = Instantiate(AssatObj, hitPose.position, hitPose.rotation);
@@ -214,6 +214,20 @@ public class PlaceOnPlane : MonoBehaviour
         }
     }
 
+    public void reset()
+    {
+       // spawnedObject.SetActive(false);
+        Destroy(spawnedObject);
+        Destroy(AssatObj);
+        VisualizePlanes(true);
+        VisualizePoints(true);
+       // spawnedObject = null;
+
+    }
+   
+
+
+   
     void Start()
     {
 
