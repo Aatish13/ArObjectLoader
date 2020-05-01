@@ -29,6 +29,9 @@ public class LoginManagerUI : MonoBehaviour
 
     public Text UserName;
     public Text ErrorText;
+
+    public GameObject DownloadBtn;
+    public GameObject OpenBtn;
     // Start is called before the first frame update
     void Start()
     {
@@ -191,12 +194,28 @@ public class LoginManagerUI : MonoBehaviour
         }
 
     }
+    void chekDownloadStatus() {
+        if (Projects[projectIndex].isloaded)
+        {
+            DownloadBtn.SetActive(false);
+            OpenBtn.SetActive(true);
+
+        }
+        else
+        {
+            DownloadBtn.SetActive(true);
+            OpenBtn.SetActive(false);
+        }
+    }
 
     public void NextProject() {
+
         if (projectIndex + 1 < Projects.Count)
         {
             projectIndex++;
             ProjectName.text = Projects[projectIndex].name;
+
+            chekDownloadStatus();
 
         }
 
@@ -205,8 +224,11 @@ public class LoginManagerUI : MonoBehaviour
     {
         if (projectIndex - 1 >=0)
         {
+
             projectIndex--;
             ProjectName.text = Projects[projectIndex].name;
+
+            chekDownloadStatus();
 
         }
 
@@ -224,6 +246,8 @@ public class LoginManagerUI : MonoBehaviour
         }
         else
         {
+
+            chekDownloadStatus();
             DashBoardPanel.SetActive(false);
             ProjectsPanal.SetActive(false);
             LoginPanal.SetActive(false);
@@ -236,7 +260,20 @@ public class LoginManagerUI : MonoBehaviour
     public InputField Input;
 
     public void DownloadProject() {
-       
+        Input.text = Projects[projectIndex].url.Replace("\\", "");
+
+        if (Projects[projectIndex].isloaded == false)
+        {
+            LoadObj();
+            Projects[projectIndex].isloaded = true;
+        }
+        else
+        {
+            PlaceOnPlane.AssatObj = Projects[projectIndex].LoadedObj;
+
+        }
+
+        chekDownloadStatus();
     }
 
     public void GoToAr()

@@ -218,7 +218,6 @@ public class PlaceOnPlane : MonoBehaviour
     {
        // spawnedObject.SetActive(false);
         Destroy(spawnedObject);
-        Destroy(AssatObj);
         VisualizePlanes(true);
         VisualizePoints(true);
        // spawnedObject = null;
