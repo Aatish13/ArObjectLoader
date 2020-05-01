@@ -150,7 +150,7 @@ public class LoginManagerUI : MonoBehaviour
     public Text ProjectName;
     int projectIndex=0;
     IEnumerator fetchProjects() {
-        var request = UnityWebRequest.Get("https://studiooneeleven.co/wp-json/wp/v2/wpfm-files");
+        var request = UnityWebRequest.Get("https://studiooneeleven.co/wp-json/wp/v2/wpfm-files?per_page=100");
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
          request.SetRequestHeader("Content-Type", "application/json");
         yield return request.SendWebRequest();
