@@ -12,7 +12,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-
+using System.IO;
+using SimpleFileBrowser;
 public class LoginManagerUI : MonoBehaviour
 {
 
@@ -28,6 +29,7 @@ public class LoginManagerUI : MonoBehaviour
     public GameObject LoadingPanal;
 
     public Text UserName;
+    public RawImage ProfileImage;
     public Text ErrorText;
 
     public GameObject DownloadBtn;
@@ -35,8 +37,10 @@ public class LoginManagerUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        FileBrowser.CheckPermission();
         if (PlayerPrefs.HasKey("username"))
         {
+            StartCoroutine(setImage(PlayerPrefs.GetString("profileimg")));
             ARCanvas.SetActive(false);
             LoginCanvas.SetActive(true);
             HomePanel.SetActive(false);
@@ -45,6 +49,8 @@ public class LoginManagerUI : MonoBehaviour
             ProjectsPanal.SetActive(false);
             LoadingPanal.SetActive(false);
             UserName.text = PlayerPrefs.GetString("displayname");
+          
+
         }
         else
         {
@@ -57,6 +63,16 @@ public class LoginManagerUI : MonoBehaviour
             LoadingPanal.SetActive(false);
         }
         
+    }
+    public void LogOut() {
+        PlayerPrefs.DeleteAll();
+        ARCanvas.SetActive(false);
+        LoginCanvas.SetActive(true);
+        HomePanel.SetActive(true);
+        LoginPanal.SetActive(false);
+        DashBoardPanel.SetActive(false);
+        ProjectsPanal.SetActive(false);
+        LoadingPanal.SetActive(false);
     }
 
     public void GotoLogin()
@@ -120,6 +136,9 @@ public class LoginManagerUI : MonoBehaviour
                 username = json.GetObject("user").GetString("username");
                 PlayerPrefs.SetString("username",username);
                 PlayerPrefs.SetString("displayname", json.GetObject("user").GetString("displayname"));
+                Debug.Log("Profile image link :::" + json.GetObject("user").GetString("avatar").Replace("\\", ""));
+                PlayerPrefs.SetString("profileimg", json.GetObject("user").GetString("avatar").Replace("\\", ""));
+                StartCoroutine(setImage(PlayerPrefs.GetString("profileimg")));
 
                 LoginPanal.SetActive(false);
                 LoadingPanal.SetActive(false);
@@ -135,6 +154,21 @@ public class LoginManagerUI : MonoBehaviour
             }
 
         }
+    }
+    IEnumerator setImage(string url)
+    {
+      //  Texture2D texture = ProfileImage.canvasRenderer.GetMaterial().mainTexture as Texture2D;
+
+        WWW www = new WWW(url);
+        yield return www;
+
+        // calling this function with StartCoroutine solves the problem
+        Debug.Log("Why on earh is this never called?");
+        ProfileImage.color = Color.white;
+        ProfileImage.texture = www.texture;
+      // www.LoadImageIntoTexture((Texture2D)ProfileImage.texture);
+        www.Dispose();
+        www = null;
     }
 
     class Project {
@@ -183,10 +217,11 @@ public class LoginManagerUI : MonoBehaviour
                 Debug.Log(p.url);
             }
             ProjectName.text = Projects[0].name;
-
+           
             LoadingPanal.SetActive(false);
             ProjectsPanal.SetActive(true);
             DashBoardPanel.SetActive(false);
+            chekDownloadStatus();
             // Print Headers
             Debug.Log(responseText);
            
@@ -194,8 +229,11 @@ public class LoginManagerUI : MonoBehaviour
         }
 
     }
+
+    
     void chekDownloadStatus() {
-        if (Projects[projectIndex].isloaded)
+
+        if (PlayerPrefs.HasKey(Projects[projectIndex].name))
         {
             DownloadBtn.SetActive(false);
             OpenBtn.SetActive(true);
@@ -264,8 +302,10 @@ public class LoginManagerUI : MonoBehaviour
 
         if (Projects[projectIndex].isloaded == false)
         {
-            LoadObj();
-            Projects[projectIndex].isloaded = true;
+            //LoadObj();
+            LoadingPanal.SetActive(true);
+            StartCoroutine(downloadAsset(Projects[projectIndex].url.Replace("\\", "")));
+           
         }
         else
         {
@@ -276,24 +316,127 @@ public class LoginManagerUI : MonoBehaviour
         chekDownloadStatus();
     }
 
+    IEnumerator downloadAsset(string url)
+    {
+        
+        UnityWebRequest www = UnityWebRequest.Get(url);
+        DownloadHandler handle = www.downloadHandler;
+
+        //Send Request and wait
+        yield return www.Send();
+
+        if (www.isNetworkError)
+        {
+
+            UnityEngine.Debug.Log("Error while Downloading Data: " + www.error);
+        }
+        else
+        {
+            UnityEngine.Debug.Log("Success");
+
+            //handle.data
+
+            //Construct path to save it
+            string dataFileName = Projects[projectIndex].name;
+            string tempPath = Path.Combine(Application.persistentDataPath, "AssetData");
+            tempPath = Path.Combine(tempPath, dataFileName + ".unity3d");
+           
+            //Save
+            save(handle.data, tempPath);
+        }
+    }
+
+    void save(byte[] data, string path)
+    {
+        //Create the Directory if it does not exist
+        if (!Directory.Exists(Path.GetDirectoryName(path)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+        }
+
+        try
+        {
+            File.WriteAllBytes(path, data);
+            Projects[projectIndex].isloaded = true;
+            PlayerPrefs.SetString(Projects[projectIndex].name, path);
+            Debug.Log("Saved Data to: " + path.Replace("/", "\\"));
+            LoadingPanal.SetActive(false);
+            chekDownloadStatus();
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning("Failed To Save Data to: " + path.Replace("/", "\\"));
+            Debug.LogWarning("Error: " + e.Message);
+        }
+    }
+
+    IEnumerable LoadObject(string path)
+    {
+        AssetBundleCreateRequest bundle = AssetBundle.LoadFromFileAsync(path);
+        yield return bundle;
+
+        AssetBundle myLoadedAssetBundle = bundle.assetBundle;
+        if (myLoadedAssetBundle == null)
+        {
+            Debug.Log("Failed to load AssetBundle!");
+            yield break;
+        }
+
+        var names =myLoadedAssetBundle.GetAllAssetNames();
+        //  AssetBundleRequest request = myLoadedAssetBundle.LoadAsset();
+        //yield return request;
+
+        GameObject obj = (GameObject)myLoadedAssetBundle.LoadAsset(names[0]);
+        //obj.transform.position = new Vector3(0.08f, -2.345f, 297.54f);
+        // obj.transform.Rotate(350.41f, 400f, 20f);
+        // obj.transform.localScale = new Vector3(1.0518f, 0.998f, 1.1793f);
+
+        //Instantiate(obj);
+        if (PlaceOnPlane.AssatObj != null) {
+            PlaceOnPlane.AssatObj = null;
+        }
+        PlaceOnPlane.AssatObj = obj;
+         Projects[projectIndex].LoadedObj=obj;
+        ARCanvas.SetActive(true);
+        ProjectsPanal.SetActive(false);
+        LoadingPanal.SetActive(false);
+        myLoadedAssetBundle.Unload(false);
+    }
+    void LoadInSeen() {
+        string path = PlayerPrefs.GetString(Projects[projectIndex].name);
+        AssetBundle bundle = AssetBundle.LoadFromFile(path);
+        var names = bundle.GetAllAssetNames();
+
+        GameObject cube = (GameObject)bundle.LoadAsset(names[0]);
+        // spawnedObject = Instantiate(cube);
+        Projects[projectIndex].LoadedObj = cube;
+        PlaceOnPlane.AssatObj = cube;
+
+        LoadingPanal.SetActive(false);
+        ARCanvas.SetActive(true);
+        ProjectsPanal.SetActive(false);
+        //  LoadObject(path);
+    }
     public void GoToAr()
     {
 
         Input.text = Projects[projectIndex].url.Replace("\\", "");
-      
-        if (Projects[projectIndex].isloaded == false)
+        LoadingPanal.SetActive(true);
+        if (Projects[projectIndex].LoadedObj==null)
         {
-           
-            LoadObj();
+            LoadInSeen();
+            // LoadObj();
+            
             Projects[projectIndex].isloaded = true;
         }
         else {
             PlaceOnPlane.AssatObj = Projects[projectIndex].LoadedObj;
-           
+            LoadingPanal.SetActive(false);
+            ARCanvas.SetActive(true);
+            ProjectsPanal.SetActive(false);
         }
         
-        ARCanvas.SetActive(true);
-        ProjectsPanal.SetActive(false);
+      
     }
 
 
@@ -311,6 +454,8 @@ public class LoginManagerUI : MonoBehaviour
     }
     IEnumerator WaitForReq(WWW www)
     {
+
+
         yield return www;
         AssetBundle bundle = www.assetBundle;
         if (www.error == null)
