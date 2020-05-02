@@ -1,10 +1,24 @@
 ManifestFileVersion: 0
+<<<<<<< HEAD
+CRC: 2147229173
+=======
 CRC: 3021612973
+>>>>>>> e96686180e82220c2563faa772254434259fbd50
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: anchor
+      Name: arcafe
       Dependencies: {}
     Info_1:
-      Name: lighttest
+      Name: opencafe
+      Dependencies: {}
+    Info_2:
+      Name: 4bhk
+      Dependencies:
+        Dependency_0: livinglight
+    Info_3:
+      Name: browncfe
+      Dependencies: {}
+    Info_4:
+      Name: livinglight
       Dependencies: {}
