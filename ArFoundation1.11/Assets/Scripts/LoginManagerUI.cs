@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using Boomlagoon.JSON;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
+
 
 using System.Globalization;
 using Newtonsoft.Json;
