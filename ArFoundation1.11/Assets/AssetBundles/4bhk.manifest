@@ -1,0 +1,35 @@
+ManifestFileVersion: 0
+CRC: 2205096045
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 794180c72bc78d85cef8cd64bace17e0
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 6091b0eb1f708f97c5fe73e15d9d9a38
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
+Assets:
+- Assets/Prefabs/AR Placed Cube Variant.prefab
+Dependencies:
+- C:/Users/Windows 10/Documents/GitHub/ArObjectLoader/ArFoundation1.11/Assets/AssetBundles/livinglight
