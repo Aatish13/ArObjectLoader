@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2205096045
+CRC: 2684761966
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 794180c72bc78d85cef8cd64bace17e0
+    Hash: c8ad455689e5fc23c0c79a01dedd216d
   TypeTreeHash:
     serializedVersion: 2
     Hash: 6091b0eb1f708f97c5fe73e15d9d9a38
@@ -32,4 +32,4 @@ ClassTypes:
 Assets:
 - Assets/Prefabs/AR Placed Cube Variant.prefab
 Dependencies:
-- C:/Users/Windows 10/Documents/GitHub/ArObjectLoader/ArFoundation1.11/Assets/AssetBundles/livinglight
+- C:/Users/Windows 10/Documents/GitHub/ArObjectLoader/ArFoundation1.11/Assets/AssetBundles/meshtree
