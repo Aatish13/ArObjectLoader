@@ -170,29 +170,7 @@ public class PlaceOnPlane : MonoBehaviour
             }
       
     }
-    public void LoadObj() {
-     
-            SnakBar.text = "Loading...............";
-        WWW www = new WWW(Url.text);
-        StartCoroutine(WaitForReq(www));
-    }
-
-    GameObject loadedGameObject;
-    IEnumerator WaitForReq(WWW www) {
-        yield return www;
-        AssetBundle bundle = www.assetBundle;
-        if (www.error == "")
-        {
-            var names = bundle.GetAllAssetNames();
-            loadedGameObject = (GameObject)bundle.LoadAsset(names[0]);
-             var obj = Instantiate(loadedGameObject);
-            SnakBar.text = "Loaded";
-
-        }
-        else {
-            Debug.Log(www.error);
-        }
-    }
+  
 
     public ARPlaneManager planeManager;
     public ARPointCloudManager pointCloudManager;
@@ -223,10 +201,10 @@ public class PlaceOnPlane : MonoBehaviour
        // spawnedObject = null;
 
     }
-   
 
 
-   
+
+
     void Start()
     {
 
