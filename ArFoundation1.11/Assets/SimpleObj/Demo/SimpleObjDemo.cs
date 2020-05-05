@@ -20,7 +20,7 @@ public class SimpleObjDemo : MonoBehaviour {
 //	private string url = "http://orbcreation.com/SimpleObj/Ayumi.obj";
 
 //	Use this when you want to use your own local files
-  	private string url = @"E:\StudioOneEleven\Objects\Objects3D\6e48z1kc7r40-bugatti\bugatti\bugatti.obj";
+  	private string url = "http://orbcreation.com/SimpleObj/apple.obj";
 
 	private string downloadedPath = "";
 	private float importScale = 0.01f;

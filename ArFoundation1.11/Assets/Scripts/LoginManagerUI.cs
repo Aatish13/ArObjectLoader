@@ -34,8 +34,6 @@ public class LoginManagerUI : MonoBehaviour
 
     public GameObject DownloadBtn;
     public GameObject OpenBtn;
-
-    public GameObject TopMenu;
     // Start is called before the first frame update
     void Start()
     {
@@ -66,13 +64,6 @@ public class LoginManagerUI : MonoBehaviour
         }
         
     }
-    public void ShowTopMenu() {
-        TopMenu.SetActive(true);
-    }
-    public void HideTopMenu()
-    {
-        TopMenu.SetActive(false);
-    }
     public void LogOut() {
         PlayerPrefs.DeleteAll();
         ARCanvas.SetActive(false);
@@ -82,7 +73,6 @@ public class LoginManagerUI : MonoBehaviour
         DashBoardPanel.SetActive(false);
         ProjectsPanal.SetActive(false);
         LoadingPanal.SetActive(false);
-        TopMenu.SetActive(false);
     }
 
     public void GotoLogin()
@@ -380,7 +370,7 @@ public class LoginManagerUI : MonoBehaviour
         }
     }
 
-    IEnumerator LoadObject(string path)
+    IEnumerable LoadObject(string path)
     {
         AssetBundleCreateRequest bundle = AssetBundle.LoadFromFileAsync(path);
         yield return bundle;
@@ -414,18 +404,18 @@ public class LoginManagerUI : MonoBehaviour
     }
     void LoadInSeen() {
         string path = PlayerPrefs.GetString(Projects[projectIndex].name);
-        //   AssetBundle bundle = AssetBundle.LoadFromFile(path);
-        //  var names = bundle.GetAllAssetNames();
-        //  GameObject cube = (GameObject)bundle.LoadAsset(names[0]);
-        // spawnedObject = Instantiate(cube);
-        // Projects[projectIndex].LoadedObj = cube;
-        // PlaceOnPlane.AssatObj = cube;
+        AssetBundle bundle = AssetBundle.LoadFromFile(path);
+        var names = bundle.GetAllAssetNames();
 
-        //  LoadingPanal.SetActive(false);
-        //  ARCanvas.SetActive(true);
-        //  ProjectsPanal.SetActive(false);
-        LoadingPanal.SetActive(true);
-        StartCoroutine( LoadObject(path));
+        GameObject cube = (GameObject)bundle.LoadAsset(names[0]);
+        // spawnedObject = Instantiate(cube);
+        Projects[projectIndex].LoadedObj = cube;
+        PlaceOnPlane.AssatObj = cube;
+
+        LoadingPanal.SetActive(false);
+        ARCanvas.SetActive(true);
+        ProjectsPanal.SetActive(false);
+        //  LoadObject(path);
     }
     public void GoToAr()
     {
@@ -505,21 +495,12 @@ public class LoginManagerUI : MonoBehaviour
         HomePanel.SetActive(false);
         LoginPanal.SetActive(false);
         ProjectsPanal.SetActive(true);
-        LoadingPanal.SetActive(true);
-        StartCoroutine(DestroyeObj());
-        DashBoardPanel.SetActive(false);
-    }
-    IEnumerator DestroyeObj()
-    {
-        yield return (new WaitForFixedUpdate());
-        LoadingPanal.SetActive(false);
-        
         ARCanvas.SetActive(false);
-
+        DashBoardPanel.SetActive(false);
     }
     // Update is called once per frame
     void Update()
     {
-      
+        
     }
 }
