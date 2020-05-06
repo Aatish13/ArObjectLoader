@@ -140,9 +140,10 @@ public class PlaceOnPlane : MonoBehaviour
     
         if (spawnedObject != null) {
             spawnedObject.transform.rotation = Quaternion.Euler(new Vector3(0,YRotation.value+90,0));
+            
         }
-       
-            if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
+        sizeLable.text = lable[index];
+        if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
             {
                 // Raycast hits are sorted by distance, so the first one
                 // will be the closest hit.
