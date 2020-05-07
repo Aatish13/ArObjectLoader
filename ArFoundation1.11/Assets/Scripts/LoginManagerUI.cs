@@ -36,13 +36,14 @@ public class LoginManagerUI : MonoBehaviour
 
     public GameObject DashboardMenu;
 
+    public Texture2D DefaultProjectTexture;
     // Start is called before the first frame update
     void Start()
     {
 
         if (PlayerPrefs.HasKey("username"))
         {
-            StartCoroutine(setImage(PlayerPrefs.GetString("profileimg")));
+            StartCoroutine(setImage(PlayerPrefs.GetString("profileimg"), ProfileImage));
             ARCanvas.SetActive(false);
 
             LoginPanal.SetActive(false);
@@ -155,7 +156,7 @@ public class LoginManagerUI : MonoBehaviour
                 PlayerPrefs.SetString("displayname", json.GetObject("user").GetString("displayname"));
                 Debug.Log("Profile image link :::" + json.GetObject("user").GetString("avatar").Replace("\\", ""));
                 PlayerPrefs.SetString("profileimg", json.GetObject("user").GetString("avatar").Replace("\\", ""));
-                StartCoroutine(setImage(PlayerPrefs.GetString("profileimg")));
+                StartCoroutine(setImage(PlayerPrefs.GetString("profileimg"), ProfileImage));
                 ErrorText.text = "";
                 LoginPanal.SetActive(false);
                 LoadingPanal.SetActive(false);
@@ -174,7 +175,7 @@ public class LoginManagerUI : MonoBehaviour
 
         }
     }
-    IEnumerator setImage(string url)
+    IEnumerator setImage(string url, RawImage rowimg)
     {
       //  Texture2D texture = ProfileImage.canvasRenderer.GetMaterial().mainTexture as Texture2D;
 
@@ -183,8 +184,8 @@ public class LoginManagerUI : MonoBehaviour
 
         // calling this function with StartCoroutine solves the problem
         Debug.Log("Why on earh is this never called?");
-        ProfileImage.color = Color.white;
-        ProfileImage.texture = www.texture;
+        rowimg.color = Color.white;
+        rowimg.texture = www.texture;
       // www.LoadImageIntoTexture((Texture2D)ProfileImage.texture);
         www.Dispose();
         www = null;
@@ -193,20 +194,45 @@ public class LoginManagerUI : MonoBehaviour
     class Project {
         public double id { get; set; }
         public string name { get; set; }
+        public string title { get; set; }
         public string url { get; set; }
         public bool isloaded = false;
         public GameObject LoadedObj { get; set; }
 
         public string size { get; set; }
         public string description { get; set; }
+
+        public string photourl { get; set; }
+        public Texture2D imgTexture { get; set; }
+
 }
+
+    IEnumerator setProjectImage(string url, RawImage rowimg,int index)
+    {
+        //  Texture2D texture = ProfileImage.canvasRenderer.GetMaterial().mainTexture as Texture2D;
+
+        WWW www = new WWW(url);
+        yield return www;
+
+        // calling this function with StartCoroutine solves the problem
+        Debug.Log("Why on earh is this never called?");
+       
+        rowimg.color = Color.white;
+        rowimg.texture = www.texture;
+        if(index==projectIndex)
+            Projects[index].imgTexture = www.texture;
+       // www.LoadImageIntoTexture((Texture2D)ProfileImage.texture);
+       www.Dispose();
+        www = null;
+    }
     public string username;
     List<Project> Projects=new List<Project>();
-
+    public RawImage ProjectImage;
     public Text ProjectName;
+    public Text ProjectTitle;
     int projectIndex=0;
     IEnumerator fetchProjects() {
-        var request = UnityWebRequest.Get("https://studiooneeleven.co/wp-json/wp/v2/wpfm-files?per_page=100");
+        var request = UnityWebRequest.Get("https://studiooneeleven.co/wp-json/wp/v2/wpfm-files?per_page=100&_embed");
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
          request.SetRequestHeader("Content-Type", "application/json");
         yield return request.SendWebRequest();
@@ -230,10 +256,14 @@ public class LoginManagerUI : MonoBehaviour
             foreach (var o in obj) {
                 if (username2.Equals(o.Obj.GetString("author_name")))
                 {
+                   
+                      Debug.Log( o.Obj.GetString("post_image"));
 
                     Projects.Add(new Project { id = o.Obj.GetNumber("id"),
                         name = o.Obj.GetString("wpfm_file_name"),
-                        url = o.Obj.GetString("wpfm_file_url"),size=o.Obj.GetString("wpfm_file_size"),description= o.Obj.GetString("wpfm_discription")
+                        url = o.Obj.GetString("wpfm_file_url"), size = o.Obj.GetString("wpfm_file_size"), description = o.Obj.GetString("wpfm_discription"),
+                        photourl = o.Obj.GetString("post_image").Replace("\\", ""),
+                        title = o.Obj.GetString("wpfm_title")
                     });
                 }
             }
@@ -241,12 +271,15 @@ public class LoginManagerUI : MonoBehaviour
             {
                 Debug.Log(p.url);
             }
-            ProjectName.text = Projects[0].name;
+            ProjectTitle.text = Projects[0].title;
+            ProjectName.text = "Project: " + Projects[0].name;
             ProjectDescription.text = Projects[0].description;
-            ProjectSize.text = Projects[0].size + "\nSize";
+            ProjectSize.text ="Model size: "+ Projects[0].size;
+            StartCoroutine(setProjectImage(Projects[0].photourl,ProjectImage,projectIndex));
             LoadingPanal.SetActive(false);
             ProjectsPanal.SetActive(true);
             DashBoardPanel.SetActive(false);
+            prevbtn.SetActive(false);
             chekDownloadStatus();
             // Print Headers
             Debug.Log(responseText);
@@ -275,16 +308,41 @@ public class LoginManagerUI : MonoBehaviour
     public Text ProjectDescription;
 
     public Text ProjectSize;
+    public GameObject nextbtn;
+    public GameObject prevbtn;
     public void NextProject() {
 
         if (projectIndex + 1 < Projects.Count)
         {
-            projectIndex++;
-            ProjectName.text = Projects[projectIndex].name;
-            ProjectDescription.text = Projects[projectIndex].description;
-            ProjectSize.text = Projects[projectIndex].size + "\nSize";
-            chekDownloadStatus();
 
+            projectIndex++;
+
+            if (Projects[projectIndex].imgTexture != null)
+            {
+                ProjectImage.texture = Projects[projectIndex].imgTexture;
+            }
+            else if (!Projects[projectIndex].photourl.Equals(""))
+            {
+
+                StartCoroutine(setProjectImage(Projects[projectIndex].photourl, ProjectImage,projectIndex));
+            }
+            else
+            {
+                ProjectImage.texture = DefaultProjectTexture;
+            }
+            ProjectTitle.text = Projects[projectIndex].title;
+            ProjectName.text = "Project: " + Projects[projectIndex].name;
+            ProjectDescription.text = Projects[projectIndex].description;
+            ProjectSize.text = "Model size: " + Projects[projectIndex].size ;
+            chekDownloadStatus();
+            if (projectIndex == Projects.Count - 1)
+            {
+                nextbtn.SetActive(false);
+            }
+            else {
+                nextbtn.SetActive(true);
+            }
+            prevbtn.SetActive(true);
         }
 
     }
@@ -294,11 +352,33 @@ public class LoginManagerUI : MonoBehaviour
         {
 
             projectIndex--;
-            ProjectName.text = Projects[projectIndex].name;
-            ProjectDescription.text = Projects[projectIndex].description;
-            ProjectSize.text = Projects[projectIndex].size+"\nSize";
-            chekDownloadStatus();
+            if (Projects[projectIndex].imgTexture != null)
+            {
+                ProjectImage.texture = Projects[projectIndex].imgTexture;
+            }
+            else if (!Projects[projectIndex].photourl.Equals(""))
+            {
 
+                StartCoroutine(setProjectImage(Projects[projectIndex].photourl, ProjectImage,projectIndex));
+            }
+            else
+            {
+                ProjectImage.texture = DefaultProjectTexture;
+            }
+            ProjectTitle.text = Projects[projectIndex].title;
+            ProjectName.text ="Project: "+ Projects[projectIndex].name;
+            ProjectDescription.text = Projects[projectIndex].description;
+            ProjectSize.text = "Model size: " + Projects[projectIndex].size;
+            chekDownloadStatus();
+            if (projectIndex == 0)
+            {
+               prevbtn.SetActive(false);
+            }
+            else
+            {
+                prevbtn.SetActive(true);
+            }
+            nextbtn.SetActive(true);
         }
 
     }
