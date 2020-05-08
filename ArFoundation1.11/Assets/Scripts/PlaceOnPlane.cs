@@ -72,8 +72,8 @@ public class PlaceOnPlane : MonoBehaviour
         spawnedObject.transform.position = pos;
     }
     public Text sizeLable;
-    float[] size = { 1f,0.5f, 0.2f, 0.1f, 0.05f, 0.02f };
-    string[] lable = { "1:1", "1:2", "1:5", "1:10", "1:20", "1:50" };
+    float[] size = { 1f,0.5f, 0.2f, 0.1f, 0.05f, 0.02f ,0.01f,0.005f};
+    string[] lable = { "1:1", "1:2", "1:5", "1:10", "1:20", "1:50","1:100","1:200" };
     int index = 0;
     public void SizeUp()
     {
@@ -217,6 +217,8 @@ public class PlaceOnPlane : MonoBehaviour
 
     public void reset()
     {
+        index = 0;
+        YRotation.value = 360;
        // spawnedObject.SetActive(false);
         Destroy(spawnedObject);
         VisualizePlanes(true);

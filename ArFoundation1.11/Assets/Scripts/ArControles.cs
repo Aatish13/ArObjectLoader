@@ -6,8 +6,11 @@ public class ArControles : MonoBehaviour
 {
     void Start() {
      //   ArSession.SetActive(false);
+
     }
 
+    public GameObject ExitMenu;
+    public GameObject ArExitpanel;
     public GameObject ArSession;
     public GameObject ArModePanel;
 
@@ -29,7 +32,35 @@ public class ArControles : MonoBehaviour
     public GameObject ArMoveYPanel;
     public GameObject ArMoveYHelp;
 
+    public void CloseAll() {
+        ExitMenu.SetActive(false);
+        ArMenuPanel.SetActive(false);
+ ArModePanel.SetActive(false);
 
+ArMenuPanel.SetActive(false);
+ ArMenuHelp.SetActive(false);
+
+ ArTransformMenuPanel.SetActive(false);
+ArTransformMenuHelp.SetActive(false);
+
+ ArMoveXZPanel.SetActive(false);
+ ArMoveXZHelp.SetActive(false);
+    ArRotatePanel.SetActive(false);
+         ArRotateHelp.SetActive(false);
+
+        ArScalePanel.SetActive(false);
+        ArScaleHelp.SetActive(false);
+    
+        ArMoveYPanel.SetActive(false);
+        ArMoveYHelp.SetActive(false);
+}
+
+    public void OpenExitMenu() {
+        ExitMenu.SetActive(true);
+    }
+    public void CloseExitMenu() {
+        ExitMenu.SetActive(false);
+    }
 
     public void OpenMenu() {
         ArModePanel.SetActive(false);
