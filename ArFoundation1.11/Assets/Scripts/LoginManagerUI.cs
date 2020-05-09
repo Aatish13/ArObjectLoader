@@ -17,7 +17,7 @@ using SimpleFileBrowser;
 public class LoginManagerUI : MonoBehaviour
 {
 
-    public GameObject ARCanvas;
+
 
 
     public GameObject LoginPanal;
@@ -40,11 +40,11 @@ public class LoginManagerUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        ArSession.SetActive(false);
         if (PlayerPrefs.HasKey("username"))
         {
             StartCoroutine(setImage(PlayerPrefs.GetString("profileimg"), ProfileImage));
-            ARCanvas.SetActive(false);
+
 
             LoginPanal.SetActive(false);
             DashBoardPanel.SetActive(true);
@@ -56,14 +56,14 @@ public class LoginManagerUI : MonoBehaviour
         }
         else if (PlayerPrefs.HasKey("intro"))
         {
-            ARCanvas.SetActive(false);
+        
             LoginPanal.SetActive(true);
             DashBoardPanel.SetActive(false);
             ProjectsPanal.SetActive(false);
             LoadingPanal.SetActive(false);
         }
         else {
-            ARCanvas.SetActive(false);
+  
             LoginPanal.SetActive(false);
             DashBoardPanel.SetActive(false);
             ProjectsPanal.SetActive(false);
@@ -72,13 +72,20 @@ public class LoginManagerUI : MonoBehaviour
         
     }
     public void OpenRegistrationLink() {
+        StartCoroutine(waitfor1sec());
         Application.OpenURL("https://studiooneeleven.co/registration/");
 
     }
     public void OpenResetPasswordLink() {
+        StartCoroutine(waitfor1sec());
+
         Application.OpenURL("https://studiooneeleven.co/password-reset/");
     }
-
+    IEnumerator waitfor1sec() {
+        LoadingPanal.SetActive(true);
+        yield return new WaitForSeconds(1);
+        LoadingPanal.SetActive(false);
+    }
     public void OpenDashboardMenu() {
         DashboardMenu.SetActive(true);
     }
@@ -93,7 +100,7 @@ public class LoginManagerUI : MonoBehaviour
         PlayerPrefs.DeleteAll();
         PlayerPrefs.SetString("intro", "true");
         DashboardMenu.SetActive(false);
-        ARCanvas.SetActive(false);
+
         LoginPanal.SetActive(true);
         DashBoardPanel.SetActive(false);
         ProjectsPanal.SetActive(false);
@@ -167,7 +174,7 @@ public class LoginManagerUI : MonoBehaviour
                 ErrorText.text = "";
                 LoginPanal.SetActive(false);
                 LoadingPanal.SetActive(false);
-                ARCanvas.SetActive(false);
+            
                 DashBoardPanel.SetActive(true);
 
             }
@@ -489,7 +496,7 @@ public class LoginManagerUI : MonoBehaviour
         
         UnityWebRequest www = UnityWebRequest.Get(url);
         DownloadHandler handle = www.downloadHandler;
-
+       
         //Send Request and wait
         yield return www.Send();
 
@@ -538,8 +545,9 @@ public class LoginManagerUI : MonoBehaviour
         }
     }
 
-    IEnumerable LoadObject(string path)
+    IEnumerator LoadObject(string path)
     {
+        LoadingPanal.SetActive(true);
         AssetBundleCreateRequest bundle = AssetBundle.LoadFromFileAsync(path);
         yield return bundle;
 
@@ -554,7 +562,8 @@ public class LoginManagerUI : MonoBehaviour
         //  AssetBundleRequest request = myLoadedAssetBundle.LoadAsset();
         //yield return request;
 
-        GameObject obj = (GameObject)myLoadedAssetBundle.LoadAsset(names[0]);
+        AssetBundleRequest objreq = myLoadedAssetBundle.LoadAssetAsync(names[0]);
+        yield return objreq;
         //obj.transform.position = new Vector3(0.08f, -2.345f, 297.54f);
         // obj.transform.Rotate(350.41f, 400f, 20f);
         // obj.transform.localScale = new Vector3(1.0518f, 0.998f, 1.1793f);
@@ -563,12 +572,15 @@ public class LoginManagerUI : MonoBehaviour
         if (PlaceOnPlane.AssatObj != null) {
             PlaceOnPlane.AssatObj = null;
         }
-        PlaceOnPlane.AssatObj = obj;
-         Projects[projectIndex].LoadedObj=obj;
-        ARCanvas.SetActive(true);
-        ProjectsPanal.SetActive(false);
+        PlaceOnPlane.AssatObj =(GameObject)objreq.asset;
+         Projects[projectIndex].LoadedObj= (GameObject)objreq.asset;
+
         LoadingPanal.SetActive(false);
-        myLoadedAssetBundle.Unload(false);
+        // ARCanvas.SetActive(true);
+        ArSession.SetActive(true);
+        ArModePanel.SetActive(true);
+        ProjectsPanal.SetActive(false);
+        ArExitpanel.SetActive(true);
     }
     void LoadInSeen() {
         string path = PlayerPrefs.GetString(Projects[projectIndex].name);
@@ -595,14 +607,15 @@ public class LoginManagerUI : MonoBehaviour
     public Texture2D SampleTexture;
     public void GoToAr()
     {
+        ArSession.SetActive(true);
         if (Projects.Count != 0)
         {
             Input.text = Projects[projectIndex].url.Replace("\\", "");
             LoadingPanal.SetActive(true);
             if (Projects[projectIndex].LoadedObj == null)
             {
-                LoadInSeen();
-                // LoadObj();
+               // LoadInSeen();
+                StartCoroutine( LoadObject(PlayerPrefs.GetString(Projects[projectIndex].name)));
 
                 Projects[projectIndex].isloaded = true;
             }
@@ -679,13 +692,14 @@ public class LoginManagerUI : MonoBehaviour
 
         LoginPanal.SetActive(false);
         ProjectsPanal.SetActive(false);
-        ARCanvas.SetActive(false);
+
         DashBoardPanel.SetActive(true);
     }
     public GameObject ArExitpanel;
     public void BackToProjects()
     {
-
+        StartCoroutine(waitfor1sec());
+        ArSession.SetActive(false);
         ArExitpanel.SetActive(false);
         LoginPanal.SetActive(false);
         ProjectsPanal.SetActive(true);
