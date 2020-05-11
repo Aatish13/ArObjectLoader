@@ -14,7 +14,7 @@ using System.IO;
 /// If a raycast hits a trackable, the <see cref="placedPrefab"/> is instantiated
 /// and moved to the hit position.
 /// </summary>
-[RequireComponent(typeof(ARRaycastManager))]
+[RequireComponent(typeof(ARRaycastManager), typeof(ARAnchorManager))]
 public class PlaceOnPlane : MonoBehaviour
 {
     [SerializeField]
@@ -106,8 +106,12 @@ public class PlaceOnPlane : MonoBehaviour
     void Awake()
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
+        anchorManager = GetComponent<ARAnchorManager>();
     }
-
+    int draw = 1;
+    public void changeDrowStatus() {
+        draw *= -1;
+    }
     bool TryGetTouchPosition(out Vector2 touchPosition)
     {
 #if UNITY_EDITOR
@@ -122,19 +126,27 @@ public class PlaceOnPlane : MonoBehaviour
         if (Input.touchCount > 0)
         {
             touchPosition = Input.GetTouch(0).position;
+            if(draw==1){
+            var pos = ARcamera.ScreenToWorldPoint(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.2f));
+            anchorManager.AddAnchor(new Pose(pos, ARcamera.transform.rotation));
+            }
+       
             return true;
+            
         }
 #endif
 
         touchPosition = default;
         return false;
     }
-
-
-
+    public Camera ARcamera;
+    public List<GameObject> line=new List<GameObject>();
+    public GameObject Pen;
+    ARAnchorManager anchorManager; 
     void Update()
     {
-      //  url = Url.textComponent.text;
+       
+        //  url = Url.textComponent.text;
         if (!TryGetTouchPosition(out Vector2 touchPosition))
             return;
     
@@ -143,6 +155,11 @@ public class PlaceOnPlane : MonoBehaviour
             
         }
         sizeLable.text = lable[index];
+        
+        // ARReferencePoint r = ARReferencePointManager.Instantiate(Pen,new Pose(pos,Quaternion.identity));
+        // line.Add(Instantiate(Pen, ));
+       
+
         if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
             {
                 // Raycast hits are sorted by distance, so the first one
