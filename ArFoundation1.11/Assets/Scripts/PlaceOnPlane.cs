@@ -30,6 +30,8 @@ public class PlaceOnPlane : MonoBehaviour
         set { m_PlacedPrefab = value; }
     }
 
+    public Text LogText;
+
     /// <summary>
     /// The object instantiated as a result of a successful raycast intersection with a plane.
     /// </summary>
@@ -108,37 +110,55 @@ public class PlaceOnPlane : MonoBehaviour
         m_RaycastManager = GetComponent<ARRaycastManager>();
         anchorManager = GetComponent<ARAnchorManager>();
     }
-    int draw = 1;
+    int draw = -1;
     public void changeDrowStatus() {
         draw *= -1;
     }
+    
     bool TryGetTouchPosition(out Vector2 touchPosition)
     {
-#if UNITY_EDITOR
-        if (Input.GetMouseButton(0))
-        {
-            var mousePosition = Input.mousePosition;
-          
-            touchPosition = new Vector2(mousePosition.x, mousePosition.y);
-            return true;
-        }
-#else
+
+
         if (Input.touchCount > 0)
         {
             touchPosition = Input.GetTouch(0).position;
-            if(draw==1){
-            var pos = ARcamera.ScreenToWorldPoint(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.2f));
-            anchorManager.AddAnchor(new Pose(pos, ARcamera.transform.rotation));
+
+           /* if (spawnedObject != null)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                RaycastHit hitt;
+                if (Physics.Raycast(ray, out hitt))
+                {
+                    var pos = ARcamera.ScreenToWorldPoint(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.2f));
+                    // var x = anchorManager.AddAnchor(new Pose(pos, ARcamera.transform.rotation));
+                    //var tes = Instantiate(Note,hitt.transform.gameObject.transform);
+                   string id= hitt.transform.gameObject.name;
+                  //  hitt.transform.gameObject.GetComponent<MeshRenderer>().material.mainTexture = Texture2D.whiteTexture;
+                    LogText.text = id.ToString();
+                    //tes.transform.parent = hitt.transform.gameObject.transform;
+                    var outline = hitt.transform.gameObject.AddComponent<Outline>();
+
+                    outline.OutlineMode = Outline.Mode.OutlineAll;
+                    outline.OutlineColor = Color.yellow;
+                    outline.OutlineWidth = 5f;
+
+                }
             }
-       
+      
+            if (draw==1){
+                var pos = ARcamera.ScreenToWorldPoint(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.2f));
+                var x = anchorManager.AddAnchor(new Pose(pos, ARcamera.transform.rotation));
+            }
+       */
             return true;
             
         }
-#endif
+
 
         touchPosition = default;
         return false;
     }
+    public GameObject Note;
     public Camera ARcamera;
     public List<GameObject> line=new List<GameObject>();
     public GameObject Pen;
@@ -155,10 +175,16 @@ public class PlaceOnPlane : MonoBehaviour
             
         }
         sizeLable.text = lable[index];
-        
+
         // ARReferencePoint r = ARReferencePointManager.Instantiate(Pen,new Pose(pos,Quaternion.identity));
         // line.Add(Instantiate(Pen, ));
-       
+
+       // if (m_RaycastManager.Raycast(touchPosition, s_Hits)) {
+
+        //    var tes = Instantiate(Pen);
+          //  tes.transform.position= s_Hits[0].pose.position;
+
+       // }
 
         if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
             {
@@ -172,7 +198,7 @@ public class PlaceOnPlane : MonoBehaviour
                     if (AssatObj != null)
                     {
                         spawnedObject = Instantiate(AssatObj, hitPose.position, hitPose.rotation);
-
+                        
                         VisualizePlanes(false);
                         VisualizePoints(false);
                     }

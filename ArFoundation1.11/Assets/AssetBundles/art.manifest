@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4156921389
+CRC: 2922849839
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e27ab55a679bd2dc4e3760691073d999
+    Hash: 70a63bb8529fd189b3701a102ef043dc
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 6091b0eb1f708f97c5fe73e15d9d9a38
+    Hash: 3023177ec969d7b1273492dfb2b980e7
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -25,9 +25,13 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
-- Class: 108
+- Class: 215
+  Script: {instanceID: 0}
+- Class: 220
   Script: {instanceID: 0}
 Assets:
 - Assets/Prefabs/AR Placed Cube.prefab

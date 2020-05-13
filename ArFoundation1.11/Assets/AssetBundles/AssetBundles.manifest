@@ -1,14 +1,14 @@
 ManifestFileVersion: 0
-CRC: 143281463
+CRC: 3529743199
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: opencafe
       Dependencies: {}
     Info_1:
+      Name: art
+      Dependencies: {}
+    Info_2:
       Name: 4bhk
       Dependencies:
         Dependency_0: art
-    Info_2:
-      Name: art
-      Dependencies: {}

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 124631736
+CRC: 4228370931
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b2ce3dda7a533b699c0ef719b05177f6
+    Hash: 79114187c714b4a65fb55c2a2aa1b819
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 6091b0eb1f708f97c5fe73e15d9d9a38
+    Hash: 3023177ec969d7b1273492dfb2b980e7
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -25,11 +25,15 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
-- Class: 108
+- Class: 215
+  Script: {instanceID: 0}
+- Class: 220
   Script: {instanceID: 0}
 Assets:
 - Assets/Prefabs/AR Placed Cube Variant.prefab
 Dependencies:
-- C:/Users/Windows 10/Documents/GitHub/ArObjectLoader/ArFoundation1.11/Assets/AssetBundles/art
+- C:/Users/hp/OneDrive/Documents/GitHub/ArObjectLoader/ArFoundation1.11/Assets/AssetBundles/art
