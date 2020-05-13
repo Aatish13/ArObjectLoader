@@ -547,7 +547,7 @@ public class LoginManagerUI : MonoBehaviour
 
     IEnumerator LoadObject(string path)
     {
-        LoadingPanal.SetActive(true);
+       
         AssetBundleCreateRequest bundle = AssetBundle.LoadFromFileAsync(path);
         yield return bundle;
 
@@ -574,7 +574,7 @@ public class LoginManagerUI : MonoBehaviour
         }
         PlaceOnPlane.AssatObj =(GameObject)objreq.asset;
          Projects[projectIndex].LoadedObj= (GameObject)objreq.asset;
-
+        Projects[projectIndex].isloaded = true;
         LoadingPanal.SetActive(false);
         // ARCanvas.SetActive(true);
         ArSession.SetActive(true);
@@ -617,7 +617,7 @@ public class LoginManagerUI : MonoBehaviour
                // LoadInSeen();
                 StartCoroutine( LoadObject(PlayerPrefs.GetString(Projects[projectIndex].name)));
 
-                Projects[projectIndex].isloaded = true;
+               
             }
             else
             {

@@ -176,15 +176,6 @@ public class PlaceOnPlane : MonoBehaviour
         }
         sizeLable.text = lable[index];
 
-        // ARReferencePoint r = ARReferencePointManager.Instantiate(Pen,new Pose(pos,Quaternion.identity));
-        // line.Add(Instantiate(Pen, ));
-
-       // if (m_RaycastManager.Raycast(touchPosition, s_Hits)) {
-
-        //    var tes = Instantiate(Pen);
-          //  tes.transform.position= s_Hits[0].pose.position;
-
-       // }
 
         if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
             {
