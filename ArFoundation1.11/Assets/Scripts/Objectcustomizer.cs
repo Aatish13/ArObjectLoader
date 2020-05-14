@@ -33,7 +33,7 @@ public class Objectcustomizer : MonoBehaviour
     void Update()
     {
 
-       /* if (Input.touchCount > 0)
+     if (Input.touchCount > 0)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
             RaycastHit hitt;
@@ -43,6 +43,6 @@ public class Objectcustomizer : MonoBehaviour
                 StartCoroutine(SelectObject(hitt));
 
             }
-        }*/
+        }
     }
 }
