@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/OBJImport/Samples/ObjFromStream.unity
     guid: 0f928d9ce1b64b94f9b3d349956f8cd3
+  - enabled: 0
+    path: Assets/Lean/Touch/Examples/Transform3D.unity
+    guid: bcc6d67bd10127441a6feb2e68bfe9e8
   m_configObjects:
     com.unity.xr.arkit.PlayerSettings: {fileID: 11400000, guid: 2d5fb8e61571b4e3897f221189089fd6,
       type: 2}

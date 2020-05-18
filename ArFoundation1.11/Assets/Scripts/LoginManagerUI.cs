@@ -545,7 +545,7 @@ public class LoginManagerUI : MonoBehaviour
         }
     }
 
-    IEnumerator LoadObject(string path)
+    IEnumerator LoadObject(string path,string viewer)
     {
        
         AssetBundleCreateRequest bundle = AssetBundle.LoadFromFileAsync(path);
@@ -567,20 +567,34 @@ public class LoginManagerUI : MonoBehaviour
         //obj.transform.position = new Vector3(0.08f, -2.345f, 297.54f);
         // obj.transform.Rotate(350.41f, 400f, 20f);
         // obj.transform.localScale = new Vector3(1.0518f, 0.998f, 1.1793f);
+        if (viewer.Equals("model"))
+        {
 
-        //Instantiate(obj);
-        if (PlaceOnPlane.AssatObj != null) {
-            PlaceOnPlane.AssatObj = null;
+            LoadedModel = Instantiate((GameObject)objreq.asset, Model.transform);
+            LoadedModel.transform.parent = Model.transform;
+            LoadingPanal.SetActive(false);
+            ProjectsPanal.SetActive(false);
+            ModelPanel.SetActive(true);
+            ModelView.SetActive(true);
         }
-        PlaceOnPlane.AssatObj =(GameObject)objreq.asset;
-         Projects[projectIndex].LoadedObj= (GameObject)objreq.asset;
-        Projects[projectIndex].isloaded = true;
-        LoadingPanal.SetActive(false);
-        // ARCanvas.SetActive(true);
-        ArSession.SetActive(true);
-        ArModePanel.SetActive(true);
-        ProjectsPanal.SetActive(false);
-        ArExitpanel.SetActive(true);
+        else {
+            if (PlaceOnPlane.AssatObj != null)
+            {
+                PlaceOnPlane.AssatObj = null;
+            }
+            PlaceOnPlane.AssatObj = (GameObject)objreq.asset;
+            Projects[projectIndex].LoadedObj = (GameObject)objreq.asset;
+            Projects[projectIndex].isloaded = true;
+            LoadingPanal.SetActive(false);
+            // ARCanvas.SetActive(true);
+            ArSession.SetActive(true);
+            ArModePanel.SetActive(true);
+            ProjectsPanal.SetActive(false);
+            ArExitpanel.SetActive(true);
+        }
+        //Instantiate(obj);
+        myLoadedAssetBundle.Unload(false);
+       
     }
     void LoadInSeen() {
         string path = PlayerPrefs.GetString(Projects[projectIndex].name);
@@ -615,7 +629,7 @@ public class LoginManagerUI : MonoBehaviour
             if (Projects[projectIndex].LoadedObj == null)
             {
                // LoadInSeen();
-                StartCoroutine( LoadObject(PlayerPrefs.GetString(Projects[projectIndex].name)));
+                StartCoroutine( LoadObject(PlayerPrefs.GetString(Projects[projectIndex].name),"ar"));
 
                
             }
@@ -646,7 +660,63 @@ public class LoginManagerUI : MonoBehaviour
 
 
     }
+    public GameObject ModelView;
+    public GameObject Model;
+    public GameObject ModelPanel;
+    public GameObject LoadedModel;
+    public void GoTo3dModel()
+    {
+    //    ArSession.SetActive(true);
+        if (Projects.Count != 0)
+        {
+            Input.text = Projects[projectIndex].url.Replace("\\", "");
+            LoadingPanal.SetActive(true);
+            if (Projects[projectIndex].LoadedObj == null)
+            {
+                // LoadInSeen();
+                StartCoroutine(LoadObject(PlayerPrefs.GetString(Projects[projectIndex].name),"model"));
 
+
+            }
+            else
+            {
+              
+               LoadedModel= Instantiate(Projects[projectIndex].LoadedObj, Model.transform);
+                LoadedModel.transform.parent = Model.transform;
+                LoadingPanal.SetActive(false);
+                ProjectsPanal.SetActive(false);
+                ModelPanel.SetActive(true);
+                ModelView.SetActive(true);
+
+
+            }
+        }
+        else
+        {
+            
+           LoadedModel= Instantiate(DefaultObject, Model.transform);
+            LoadedModel.transform.parent = Model.transform;
+
+            LoadingPanal.SetActive(false);
+            ProjectsPanal.SetActive(false);
+            ModelPanel.SetActive(true);
+            ModelView.SetActive(true);
+
+        }
+
+
+
+    }
+
+    public void ExitModelView() {
+        
+        Destroy(LoadedModel);
+        Model.transform.position = new Vector3(0, 0, 0);
+        Model.transform.localScale = new Vector3(2, 2, 2);
+        ModelPanel.SetActive(false);
+        ModelView.SetActive(false);
+        ProjectsPanal.SetActive(true);
+    }
 
 
     public void LoadObj()
