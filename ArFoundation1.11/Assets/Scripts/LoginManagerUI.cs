@@ -345,26 +345,28 @@ public class LoginManagerUI : MonoBehaviour
     }
 
     
-    void chekDownloadStatus() {
+    bool chekDownloadStatus() {
         if (Projects.Count != 0)
         {
             if (PlayerPrefs.HasKey(Projects[projectIndex].name))
             {
                 DownloadBtn.SetActive(false);
                 OpenBtn.SetActive(true);
-
+                return true;
             }
             else
             {
                 DownloadBtn.SetActive(true);
                 OpenBtn.SetActive(false);
+                return false;
             }
 
         }
         else {
+            
             DownloadBtn.SetActive(false);
             OpenBtn.SetActive(true);
-
+            return false;
         }
 
     }
@@ -669,27 +671,35 @@ public class LoginManagerUI : MonoBehaviour
     //    ArSession.SetActive(true);
         if (Projects.Count != 0)
         {
-            Input.text = Projects[projectIndex].url.Replace("\\", "");
-            LoadingPanal.SetActive(true);
-            if (Projects[projectIndex].LoadedObj == null)
+            if (chekDownloadStatus())
             {
-                // LoadInSeen();
-                StartCoroutine(LoadObject(PlayerPrefs.GetString(Projects[projectIndex].name),"model"));
+                Input.text = Projects[projectIndex].url.Replace("\\", "");
+                LoadingPanal.SetActive(true);
+                if (Projects[projectIndex].LoadedObj == null)
+                {
+                    // LoadInSeen();
+                    StartCoroutine(LoadObject(PlayerPrefs.GetString(Projects[projectIndex].name), "model"));
 
+
+                }
+                else
+                {
+
+                    LoadedModel = Instantiate(Projects[projectIndex].LoadedObj, Model.transform);
+                    LoadedModel.transform.parent = Model.transform;
+                    LoadingPanal.SetActive(false);
+                    ProjectsPanal.SetActive(false);
+                    ModelPanel.SetActive(true);
+                    ModelView.SetActive(true);
+
+
+                }
 
             }
-            else
-            {
-              
-               LoadedModel= Instantiate(Projects[projectIndex].LoadedObj, Model.transform);
-                LoadedModel.transform.parent = Model.transform;
-                LoadingPanal.SetActive(false);
-                ProjectsPanal.SetActive(false);
-                ModelPanel.SetActive(true);
-                ModelView.SetActive(true);
-
-
+            else {
+                  
             }
+            
         }
         else
         {
